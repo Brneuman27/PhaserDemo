@@ -6,6 +6,8 @@ export class Game extends Scene
     player: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
     cursor: Phaser.Types.Input.Keyboard.CursorKeys;
     stars: Phaser.Physics.Arcade.Group;
+    score = 0;
+    scoreText: any;
     constructor ()
     {
         super('Game');
@@ -51,8 +53,6 @@ export class Game extends Scene
             return null;
         })
 
-        this.physics.add.collider(this.stars, this.platforms);
-
         this.player = this.physics.add.sprite(100, 450, 'dude');
 
         this.player.setBounce(0.2);
@@ -60,6 +60,21 @@ export class Game extends Scene
         this.player.setCollideWorldBounds(true);
 
         this.physics.add.collider(this.player, this.platforms);
+
+        this.physics.add.collider(this.stars, this.platforms);
+
+        this.physics.add.overlap(
+            this.player, 
+            this.stars, 
+            (player: any, star: any) => {
+            star.disableBody(true, true);
+            this.score += 1;
+            this.scoreText.setText('score: ' +this.score);
+        }, 
+            undefined, 
+            this
+        );
+        this.scoreText = this.add.text(16,16, 'score: 0', { fontSize:'48px', fill: '#000' })
 
         this.anims.create({
             key: 'left',
