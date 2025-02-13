@@ -5,6 +5,7 @@ export class Game extends Scene
     platforms: Phaser.Physics.Arcade.StaticGroup;
     player: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
     cursor: Phaser.Types.Input.Keyboard.CursorKeys;
+    stars: Phaser.Physics.Arcade.Group;
     constructor ()
     {
         super('Game');
@@ -15,8 +16,7 @@ export class Game extends Scene
     this.load.image('ground', 'assets/platform.png');
     this.load.image('star', 'assets/star.png');
     this.load.image('bomb', 'assets/bomb.png');
-    this.load.spritesheet('dude', 
-        'assets/dude.png',
+    this.load.spritesheet('dude', 'assets/dude.png',
         { frameWidth: 32, frameHeight: 48 }
     );
 }
@@ -35,6 +35,23 @@ export class Game extends Scene
         this.platforms.create(600, 400, 'ground');
         this.platforms.create(50, 250, 'ground');
         this.platforms.create(750, 220, 'ground');
+
+        this.stars = this.physics.add.group({
+            key: 'star',
+            repeat: 11,
+            setXY: {
+                x: 12,
+                y: 0,
+                stepX: 70,
+            }
+        });
+
+        this.stars.children.iterate( (star: any) => {
+            star.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
+            return null;
+        })
+
+        this.physics.add.collider(this.stars, this.platforms);
 
         this.player = this.physics.add.sprite(100, 450, 'dude');
 
