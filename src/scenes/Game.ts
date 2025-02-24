@@ -8,6 +8,8 @@ export class Game extends Scene
     stars: Phaser.Physics.Arcade.Group;
     score = 0;
     scoreText: any;
+    bombs: Phaser.Physics.Arcade.Group;
+    gameOver = false;
     constructor ()
     {
         super('Game');
@@ -68,13 +70,24 @@ export class Game extends Scene
             this.stars, 
             (player: any, star: any) => {
             star.disableBody(true, true);
-            this.score += 1;
+            this.score += 10;
             this.scoreText.setText('score: ' +this.score);
         }, 
             undefined, 
             this
         );
         this.scoreText = this.add.text(16,16, 'score: 0', { fontSize:'48px', fill: '#000' })
+
+        this.bombs = this.physics.add.group();
+
+        this.physics.add.collider(this.bombs, this.platforms);
+
+        this.physics.add.collider(this.player, this.bombs, (player: any, star: any)=>{
+            this.physics.pause();
+            player.setTint(0xff0000);
+            player.anims.play('turn');
+            this.gameOver = true;
+        }, undefined, this);
 
         this.anims.create({
             key: 'left',
